@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: imbo
+Version: 0.1.0
+Summary: A tool to plot pretty bounding boxes around objects.
+Home-page: https://github.com/imneonizer/imbo
+Author: Nitin Rai
+Author-email: mneonizer@gmail.com
+License: BSD
+Description: See https://github.com/imneonizer/imbo for complete user guide.
+Platform: UNKNOWN
+Requires-Python: >=2.7

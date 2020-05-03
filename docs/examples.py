@@ -5,12 +5,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import imbo
 import os
 
+
 def show_and_save(title, image, path):
     cv2.imwrite(path, image)
     cv2.imshow(title, image)
     print("Press 'Enter' to display the next picture...")
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
 
 def main():
     if "examples.py" in os.listdir():
@@ -28,7 +30,8 @@ def main():
     in_path = os.path.join("docs", "images", "khatia.jpg")
     out_path = os.path.join("docs", "images", "khatia_imbo.png")
     image = cv2.imread(in_path, cv2.IMREAD_COLOR)
-    imbo.draw(image, 280, 24, 802, 593, "Khatia", "maroon", thickness=8, font_size=40)
+    imbo.draw(image, 280, 24, 802, 593, "Khatia",
+              "maroon", thickness=8, font_size=40)
     imbo.draw(image, 687, 1, 1448, 648, "Piano", "gray")
     imbo.draw(image, 888, 492, 1190, 536, "Text")
     show_and_save("Khatia BUNIATISHVILI", image, out_path)
@@ -46,7 +49,7 @@ def main():
     out_path = os.path.join("docs", "images", "nao-romeo-pepper_imbo.png")
     image = cv2.imread(in_path, cv2.IMREAD_COLOR)
     imbo.draw(image, 155, 152, 244, 297, "Nao", bbox_color="#ffffff")
-    imbo.draw(image, 260, 6, 423, 416, "Romeo", bbox_color=(255,0,0))
+    imbo.draw(image, 260, 6, 423, 416, "Romeo", bbox_color=(255, 0, 0))
     imbo.draw(image, 421, 76, 547, 402, "Pepper")
     show_and_save("Robots", image, out_path)
 
@@ -60,7 +63,8 @@ def main():
     in_path = os.path.join("docs", "images", "paragliders.jpg")
     out_path = os.path.join("docs", "images", "paragliders_imbo.png")
     image = cv2.imread(in_path, cv2.IMREAD_COLOR)
-    imbo.draw(image, 90, 228, 318, 428, "Paraglider", thickness=8, adjust_label=(-3, -20))
+    imbo.draw(image, 90, 228, 318, 428, "Paraglider",
+              thickness=8, adjust_label=(-3, -20))
     imbo.draw(image, 521, 110, 656, 415, "Paraglider")
     show_and_save("Pretty Bounding Box", image, out_path)
 

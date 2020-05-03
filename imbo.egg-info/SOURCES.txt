@@ -1,0 +1,14 @@
+MANIFEST.in
+README.md
+setup.py
+imbo/__init__.py
+imbo/__main__.py
+imbo/imbo.py
+imbo/rescaler.py
+imbo.egg-info/PKG-INFO
+imbo.egg-info/SOURCES.txt
+imbo.egg-info/dependency_links.txt
+imbo.egg-info/requires.txt
+imbo.egg-info/top_level.txt
+imbo/fonts/Roboto-Medium.ttf
+imbo/fonts/Ubuntu-B.ttf

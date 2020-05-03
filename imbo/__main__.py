@@ -5,7 +5,7 @@ import shutil
 abspath = lambda file_name: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), os.path.join("fonts", file_name))
 
-#create fonts directory in module location
+# create fonts directory in module location
 if not os.path.exists(abspath("")):
     os.makedirs(abspath(""))
 

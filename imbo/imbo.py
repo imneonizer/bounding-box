@@ -139,7 +139,7 @@ class ImBo(ReScaler):
         left, top, right, bottom = int(left), int(top), int(right), int(bottom)
 
         # if rescaling is enabled resize image to width=1920 or height=1080
-        # based on whether image is landscape or portrait and process
+        # based on whether image is landscape or portrait and process the image
         if rescale:
             original_height, original_width = image.shape[:2]
             image, left, top, right, bottom = self.rescale(
