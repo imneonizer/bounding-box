@@ -17,8 +17,8 @@ setup(
     author='Nitin Rai',
     author_email='mneonizer@gmail.com',
     description='A tool to plot pretty bounding boxes around objects.',
-    long_description='See https://github.com/imneonizer/bounding-box for complete user guide.',
-    url='https://github.com/imneonizer/bounding-box',
+    long_description='See https://github.com/imneonizer/imbo for complete user guide.',
+    url='https://github.com/imneonizer/imbo',
     install_requires=install_requires,
     license='BSD',
 )
