@@ -93,5 +93,4 @@ python docs/examples.py
 
 ### credits
 > Again, many thanks to [**@nalepae**](https://github.com/nalepae/bounding-box) for coming up with the original idea and providing some core functionalities for IMBO.
-
-<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+> IMBO Icon made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>
