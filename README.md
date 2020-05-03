@@ -21,7 +21,7 @@
   </td>
 </tr>
 </table>
-We at [SmartCow](https://www.smartcow.ai/) constantly work on development of tools to enhance our workflow hence **imbo**.
+We at [SmartCow](https://www.smartcow.ai) constantly work on development of tools to enhance our workflow hence **imbo**.
 
 ![banner](docs/images/banner.png)
 
