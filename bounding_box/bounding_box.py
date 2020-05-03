@@ -1,123 +1,213 @@
-from __future__ import division as _division
-from __future__ import print_function as _print_function
-
-import os as _os
-import os.path as _path
-import numpy as np
-import cv2 as _cv2
+import os
+import cv2
 from PIL import ImageFont
-import numpy as _np
-from hashlib import md5 as _md5
+import numpy as np
+from hashlib import md5
+import shutil
 
-_LOC = _path.realpath(_path.join(_os.getcwd(),_path.dirname(__file__)))
+abspath = lambda file_name: os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), os.path.join("fonts", file_name))
 
-#https://clrs.cc/
-_COLOR_NAME_TO_RGB = dict(
-    navy=((0, 38, 63), (119, 193, 250)),
-    blue=((0, 120, 210), (173, 220, 252)),
-    aqua=((115, 221, 252), (0, 76, 100)),
-    teal=((15, 205, 202), (0, 0, 0)),
-    olive=((52, 153, 114), (25, 58, 45)),
-    green=((0, 204, 84), (15, 64, 31)),
-    lime=((1, 255, 127), (0, 102, 53)),
-    yellow=((255, 216, 70), (103, 87, 28)),
-    orange=((255, 125, 57), (104, 48, 19)),
-    red=((255, 47, 65), (131, 0, 17)),
-    maroon=((135, 13, 75), (239, 117, 173)),
-    fuchsia=((246, 0, 184), (103, 0, 78)),
-    purple=((179, 17, 193), (241, 167, 244)),
-    black=((24, 24, 24), (220, 220, 220)),
-    gray=((168, 168, 168), (0, 0, 0)),
-    silver=((220, 220, 220), (0, 0, 0))
-)
 
-_COLOR_NAMES = list(_COLOR_NAME_TO_RGB)
+class ImBox():
 
-_DEFAULT_COLOR_NAME = "green"
+    def __init__(self, font_name="Roboto-Medium", font_size=20):
+        self.FONT_SIZE = font_size
+        self.FONT_NAME = font_name
+        self.FONT = ImageFont.truetype(
+            abspath(self.FONT_NAME + ".ttf"), font_size)
+        self.COLOR_RGB2BGR = lambda rgb: rgb[::-1]
+        self.COLOR_BGR2RGB = lambda bgr: bgr[::-1]
+        self.COLOR_RGB2HEX = lambda rgb: '#' + '%02x%02x%02x' % rgb
+        self.COLOR_BGR2HEX = lambda bgr: '#' + \
+            '%02x%02x%02x' % self.COLOR_BGR2RGB(bgr)
+        self.COLOR_HEX2RGB = lambda hx: (int(hx.lstrip("#")[0:2], 16), int(
+            hx.lstrip("#")[2:4], 16), int(hx.lstrip("#")[4:6], 16))
+        self.COLOR_HEX2BGR = lambda hx: self.COLOR_RGB2BGR(
+            self.COLOR_HEX2RGB(hx))
 
-_FONT_PATH = _os.path.join(_LOC, "Ubuntu-B.ttf")
-_FONT_HEIGHT = 15
-_FONT = ImageFont.truetype(_FONT_PATH, _FONT_HEIGHT)
+        light, dark = (240, 241, 242), (0, 0, 0)
+        self.COLOR_NAME_TO_RGB = dict(
+            navy=((0, 38, 63), (light)),
+            blue=((0, 120, 210), (light)),
+            aqua=((115, 221, 252), (dark)),
+            teal=((15, 205, 202), (dark)),
+            olive=((52, 153, 114), (dark)),
+            green=((0, 204, 84), (dark)),
+            lime=((1, 255, 127), (dark)),
+            yellow=((255, 216, 70), (dark)),
+            orange=((255, 125, 57), (dark)),
+            red=((255, 47, 65), (dark)),
+            maroon=((135, 13, 75), (light)),
+            fuchsia=((246, 0, 184), (dark)),
+            purple=((179, 17, 193), (light)),
+            black=((24, 24, 24), (light)),
+            gray=((168, 168, 168), (dark)),
+            silver=((220, 220, 220), (dark)),
+            white=((light), (dark))
+        )
 
-def _rgb_to_bgr(color):
-    return list(reversed(color))
+        self.COLOR_NAMES = list(self.COLOR_NAME_TO_RGB)
+        self.LABEL2COLOR = lambda label: self.COLOR_NAMES[
+            int(md5(label.encode()).hexdigest(), 16) % len(self.COLOR_NAME_TO_RGB)]
 
-def _color_image(image, font_color, background_color):
-    return background_color + (font_color - background_color) * image / 255
+    @property
+    def available_fonts(self):
+        return list(filter(lambda x: os.path.splitext(x)[1] == ".ttf", os.listdir(abspath(""))))
 
-def _get_label_image(text, font_color_tuple_bgr, background_color_tuple_bgr):
-    text_image = _FONT.getmask(text)
-    shape = list(reversed(text_image.size))
-    bw_image = np.array(text_image).reshape(shape)
+    def upload_font(self, font_path):
+        shutil.copy(font_path, abspath(os.path.basename(font_path)))
 
-    image = [
-        _color_image(bw_image, font_color, background_color)[None, ...]
-        for font_color, background_color
-        in zip(font_color_tuple_bgr, background_color_tuple_bgr)
-    ]
+    def check_color(self, color, label=False):
+        if type(color) is str:
+            if color.startswith("#"):
+                # check if HEX color input
+                assert len(
+                    color) == 7, "incorrect HEX color value: {}".format(color)
+                color = self.COLOR_HEX2BGR(color)
+            else:
+                # check if color name input
+                if label:
+                    # if label_color ends with '-contrast'
+                    # return the matching background color for that name
+                    if color.endswith("-contrast"):
+                        color = color.replace("-contrast", "")
+                        assert color in self.COLOR_NAMES, "'label_color' name must be one of [" + "-contrast, ".join(
+                            self.COLOR_NAMES) + "]"
+                        color = self.COLOR_RGB2BGR(
+                            self.COLOR_NAME_TO_RGB[color][1])
+                    else:
+                        # return the color value for the name
+                        assert color in self.COLOR_NAMES, "'bbox_color' name must be one of [" + ", ".join(
+                            self.COLOR_NAMES) + "]"
+                        color = self.COLOR_RGB2BGR(
+                            self.COLOR_NAME_TO_RGB[color][0])
 
-    return np.concatenate(image).transpose(1, 2, 0)
+                else:
+                    assert color in self.COLOR_NAMES, "'bbox_color' name must be one of [" + ", ".join(
+                        self.COLOR_NAMES) + "]"
+                    color = self.COLOR_RGB2BGR(
+                        self.COLOR_NAME_TO_RGB[color][0])
+        else:
+            # else verify tuple length and its values
+            assert type(color) in [tuple, list, set] and len(
+                color) == 3, "incorrect BGR color value: {}".format(color)
+            assert type(color[0]) is int and type(color[1]) is int and type(
+                color[2]) is int, "color tuple items must be integer"
+            color = self.COLOR_RGB2BGR(tuple(color))
 
-def add(image, left, top, right, bottom, label=None, color=None):
-    if type(image) is not _np.ndarray:
-        raise TypeError("'image' parameter must be a numpy.ndarray")
-    try:
+        return color
+
+    def get_label_image(self, text, font_color_tuple_bgr, background_color_tuple_bgr, font_name, font_size):
+        if font_size != self.FONT_SIZE:
+            self.FONT_SIZE = font_size
+            self.FONT = ImageFont.truetype(
+                abspath(self.FONT_NAME + ".ttf"), font_size)
+
+        if font_name != self.FONT_NAME:
+            self.FONT_NAME = font_name
+            self.FONT = ImageFont.truetype(
+                abspath(font_name + ".ttf"), self.FONT_SIZE)
+
+        text_image = self.FONT.getmask(text)
+
+        shape = list(reversed(text_image.size))
+        bw_image = np.array(text_image).reshape(shape)
+
+        color_image = lambda image, font_color, background_color: background_color + \
+            (font_color - background_color) * image / 255
+
+        image = [
+            color_image(bw_image, font_color, background_color)[None, ...]
+            for font_color, background_color
+            in zip(font_color_tuple_bgr, background_color_tuple_bgr)
+        ]
+
+        return np.concatenate(image).transpose(1, 2, 0)
+
+    def draw(self, image, left, top, right, bottom, label=None, bbox_color=None, label_color=None, font_name="Roboto-Medium", font_size=20, thickness=2, adjust_label=(0, 0)):
+        assert type(image) is np.ndarray, "'image' parameter must be a numpy.ndarray, but given: {}".format(
+            type(image))
+        assert type(label) is str, "'label' must be a string"
+        if len(label) == 0:
+            label = None
+        assert type(thickness) is int, "'thickness' must be a integer"
+
+        # bounding box coordinates
         left, top, right, bottom = int(left), int(top), int(right), int(bottom)
-    except ValueError:
-        raise TypeError("'left', 'top', 'right' & 'bottom' must be a number")
 
-    if label and type(label) is not str:
-        raise TypeError("'label' must be a str")
+        # experimental argument to override label box position
+        adj_left, adj_top = adjust_label
 
-    if label and not color:
-        hex_digest = _md5(label.encode()).hexdigest()
-        color_index = int(hex_digest, 16) % len(_COLOR_NAME_TO_RGB)
-        color = _COLOR_NAMES[color_index]
+        # storing original input arguments for later reference
+        BBOX_COLOR, LABEL_COLOR = bbox_color, label_color
 
-    if not color:
-        color = _DEFAULT_COLOR_NAME
+        if bbox_color is None and label_color is None:
+            # generate bbox_color and label_color based on label text
+            bbox_color, label_color = self.COLOR_NAME_TO_RGB[
+                self.LABEL2COLOR(label)]
+            bbox_color, label_color = self.COLOR_RGB2BGR(
+                bbox_color), self.COLOR_RGB2BGR(label_color)
 
-    if type(color) is not str:
-        raise TypeError("'color' must be a str")
+        if bbox_color is not None:
+            # verify input bbox_color
+            bbox_color = self.check_color(bbox_color)
+        else:
+            # generate bbox_color based on label text
+            bbox_color = self.COLOR_RGB2BGR(
+                self.COLOR_NAME_TO_RGB[self.LABEL2COLOR(label)][0])
 
-    if color not in _COLOR_NAME_TO_RGB:
-        msg = "'color' must be one of " + ", ".join(_COLOR_NAME_TO_RGB)
-        raise ValueError(msg)
+        if label_color is not None:
+            # verify input label_color
+            label_color = self.check_color(label_color, label=True)
+        else:
+            # generate matching label_color for bbox_color name input
+            if type(BBOX_COLOR) == str and (not BBOX_COLOR.startswith("#")):
+                label_color = self.check_color(
+                    BBOX_COLOR + '-contrast', label=True)
+            else:
+                # generate label_color based on label text
+                label_color = self.COLOR_RGB2BGR(
+                    self.COLOR_NAME_TO_RGB[self.LABEL2COLOR(label)][1])
 
-    colors = [_rgb_to_bgr(item) for item in _COLOR_NAME_TO_RGB[color]]
-    color, color_text = colors
+        image = cv2.rectangle(image, (left, top),
+                              (right, bottom), bbox_color, thickness=thickness)
 
-    _cv2.rectangle(image, (left, top), (right, bottom), color, 2)
+        if label:
+            _, image_width, _ = image.shape
 
-    if label:
-        _, image_width, _ = image.shape
+            label_image = self.get_label_image(
+                label, label_color, bbox_color, font_name, font_size)
+            label_height, label_width, _ = label_image.shape
+            rectangle_height, rectangle_width = 1 + label_height, 1 + label_width
 
-        label_image =  _get_label_image(label, color_text, color)
-        label_height, label_width, _ = label_image.shape
+            rectangle_bottom = top
+            rectangle_left = max(
+                0, min(left - 1, image_width - rectangle_width))
 
-        rectangle_height, rectangle_width = 1 + label_height, 1 + label_width
+            rectangle_top = rectangle_bottom - rectangle_height
+            rectangle_right = rectangle_left + rectangle_width
 
-        rectangle_bottom = top
-        rectangle_left = max(0, min(left - 1, image_width - rectangle_width))
+            label_top = rectangle_top + 1 + adj_top
 
-        rectangle_top = rectangle_bottom - rectangle_height
-        rectangle_right = rectangle_left + rectangle_width
+            if rectangle_top < 0:
+                rectangle_top = top
+                rectangle_bottom = rectangle_top + label_height + 1
+                label_top = rectangle_top + adj_top
 
-        label_top = rectangle_top + 1
+            # label text placement position
+            label_left = rectangle_left + 1 + adj_left
+            label_bottom = label_top + label_height
+            label_right = label_left + label_width
 
-        if rectangle_top < 0:
-            rectangle_top = top
-            rectangle_bottom = rectangle_top + label_height + 1
+            rec_left_top = (rectangle_left + adj_left, rectangle_top + adj_top)
+            rec_right_bottom = (rectangle_right + adj_left, rectangle_bottom)
 
-            label_top = rectangle_top
+            # rectangle fill below label text on image as a backup
+            cv2.rectangle(image, rec_left_top,
+                          rec_right_bottom, bbox_color, -1)
+            # overwriting image array with text array
+            image[label_top:label_bottom,
+                  label_left:label_right, :] = label_image
 
-        label_left = rectangle_left + 1
-        label_bottom = label_top + label_height
-        label_right = label_left + label_width
-
-        rec_left_top = (rectangle_left, rectangle_top)
-        rec_right_bottom = (rectangle_right, rectangle_bottom)
-
-        _cv2.rectangle(image, rec_left_top, rec_right_bottom, color, -1)
-
-        image[label_top:label_bottom, label_left:label_right, :] = label_image
+        return image
