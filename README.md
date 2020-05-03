@@ -1,5 +1,5 @@
-# Bounding Box
-**Bounding Box** is a library to plot pretty bounding boxes with a simple Python API.
+# Image Bounding Box
+**IMBO** is a library to plot pretty bounding boxes with a simple Python API.
 
 *Please notice this lib does **not** do object detection for you, but only helps to display pretty bounding boxes with a carefully chosen set of colors.*
 
@@ -21,7 +21,9 @@
   </td>
 </tr>
 </table>
+We at [SmartCow](https://www.smartcow.ai/) constantly work on development of tools to enhance our workflow hence **imbo**.
 
+![banner](docs/images/banner.png)
 
 ## Installation
 ````python
@@ -79,9 +81,10 @@ python docs/examples.py
  ```
 
 <table>
-  <img src="docs/images/winton_imbo.png", width=50%, height="250px">
-  <img src="docs/images/nao-romeo-pepper_imbo.png", width=50%, height="250px">
-  <img src="docs/images/khatia_imbo.png", width=50%, height="250px">
-  <img src="docs/images/selfie_imbo.png", width=50%, height="250px">
+  <img src="docs/images/winton_imbo.png", width="800px", height="450px">
+  <img src="docs/images/nao-romeo-pepper_imbo.png", width="800px", height="450px">
+  <img src="docs/images/khatia_imbo.png", width"800px", height="450px">
+  <img src="docs/images/selfie_imbo.png", width="800px", height="450px">
 </table>
 
+> Many many thanks to [**@nalepae**](https://github.com/nalepae/bounding-box) for coming up with the original idea and providing some core functionalities.
