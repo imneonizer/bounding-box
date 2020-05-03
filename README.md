@@ -25,6 +25,9 @@ We at [SmartCow](https://www.smartcow.ai) constantly work on development of tool
 
 ![banner](docs/images/banner.png)
 
+## Inspiration
+The core idea came from [nalepae/bounding-box](https://github.com/nalepae/bounding-box) All the credits goes to **Manu NALEPA** for the core functionalities, IMBO is built on top of [bounding-box](https://pypi.org/project/bounding-box/) with more enchanced features keeping customization at focus.
+
 ## Installation
 ````python
 >> pip install imbo
@@ -88,4 +91,4 @@ python docs/examples.py
   <img src="docs/images/selfie_imbo.png", width="800px", height="450px">
 </table>
 
-> Many many thanks to [**@nalepae**](https://github.com/nalepae/bounding-box) for coming up with the original idea and providing some core functionalities.
+> Again, many thanks to [**@nalepae**](https://github.com/nalepae/bounding-box) for coming up with the original idea and providing some core functionalities for IMBO.
