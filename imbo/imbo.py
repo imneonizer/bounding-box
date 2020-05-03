@@ -4,14 +4,16 @@ from PIL import ImageFont
 import numpy as np
 from hashlib import md5
 import shutil
+from imbo.rescaler import ReScaler
 
 abspath = lambda file_name: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), os.path.join("fonts", file_name))
 
 
-class ImBo():
+class ImBo(ReScaler):
 
     def __init__(self, font_name="Roboto-Medium", font_size=20):
+
         self.FONT_SIZE = font_size
         self.FONT_NAME = font_name
         self.FONT = ImageFont.truetype(
@@ -125,7 +127,7 @@ class ImBo():
 
         return np.concatenate(image).transpose(1, 2, 0)
 
-    def draw(self, image, left, top, right, bottom, label=None, bbox_color=None, label_color=None, font_name="Roboto-Medium", font_size=20, thickness=2, adjust_label=(0, 0)):
+    def draw(self, image, left, top, right, bottom, label=None, bbox_color=None, label_color=None, font_name="Roboto-Medium", font_size=20, thickness=2, adjust_label=(0, 0), rescale=False):
         assert type(image) is np.ndarray, "'image' parameter must be a numpy.ndarray, but given: {}".format(
             type(image))
         assert type(label) is str, "'label' must be a string"
@@ -135,6 +137,13 @@ class ImBo():
 
         # bounding box coordinates
         left, top, right, bottom = int(left), int(top), int(right), int(bottom)
+
+        # if rescaling is enabled resize image to width=1920 or height=1080
+        # based on whether image is landscape or portrait and process
+        if rescale:
+            original_height, original_width = image.shape[:2]
+            image, left, top, right, bottom = self.rescale(
+                image, left, top, right, bottom)
 
         # experimental argument to override label box position
         adj_left, adj_top = adjust_label
@@ -210,4 +219,9 @@ class ImBo():
             image[label_top:label_bottom,
                   label_left:label_right, :] = label_image
 
-        return image
+        if rescale:
+            image = cv2.resize(
+                image, (original_width, original_height), interpolation=cv2.INTER_AREA)
+            return image
+        else:
+            return image
