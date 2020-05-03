@@ -9,7 +9,7 @@ abspath = lambda file_name: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), os.path.join("fonts", file_name))
 
 
-class ImBox():
+class ImBo():
 
     def __init__(self, font_name="Roboto-Medium", font_size=20):
         self.FONT_SIZE = font_size
