@@ -69,7 +69,8 @@ image = imbo.draw(image, left, top, right, bottom, label, color)
     `lime`, `yellow`, `orange`, `red`, `maroon`, `fuchsia`, `purple`,
     `black`, `gray` ,`silver` , `white`.
 
-  
+## Demo
+![](docs/images/nitin-demo.gif)
 
 ## Examples
 The script to plot examples of this **README** is available [here](docs/examples.py). go in root  of this git repository then write:
