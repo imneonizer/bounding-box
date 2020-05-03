@@ -59,7 +59,7 @@ image = imbo.draw(image, left, top, right, bottom, label, color)
 
 - ``adjust_label``: Incase while increasing the ``font_size`` or ``thickness`` the label text might get misplaced, use ``adjust_label=(x, y)`` to adjust the position.
 
-- ``rescale``: There are time when the input image is either of very less resolution or very high resolution in such cases use ``rescale=True`` , see [docs/Rescaling example/Readme.md](docs/Rescaling example/Readme.md) to know how rescaling affects the output.
+- ``rescale``: There are time when the input image is either of very less resolution or very high resolution in such cases use ``rescale=True`` , see [this example](https://github.com/imneonizer/imbo/blob/master/docs/Rescaling%20example/Readme.md) to know how rescaling affects the output.
 
 - `bbox_color`: RGB tuple, HEX code or a string representing the color of the bounding box.
 
@@ -83,7 +83,7 @@ python docs/examples.py
 <table>
   <img src="docs/images/winton_imbo.png", width="800px", height="450px">
   <img src="docs/images/nao-romeo-pepper_imbo.png", width="800px", height="450px">
-  <img src="docs/images/khatia_imbo.png", width"800px", height="450px">
+  <img src="docs/images/khatia_imbo.png", width="800px", height="450px">
   <img src="docs/images/selfie_imbo.png", width="800px", height="450px">
 </table>
 
