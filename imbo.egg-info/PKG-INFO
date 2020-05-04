@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: imbo
-Version: 0.1.0
+Version: 0.1.1
 Summary: A tool to plot pretty bounding boxes around objects.
 Home-page: https://github.com/imneonizer/imbo
 Author: Nitin Rai

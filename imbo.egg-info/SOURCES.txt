@@ -10,5 +10,12 @@ imbo.egg-info/SOURCES.txt
 imbo.egg-info/dependency_links.txt
 imbo.egg-info/requires.txt
 imbo.egg-info/top_level.txt
+imbo/fonts/Aclonica.ttf
+imbo/fonts/Courgette.ttf
+imbo/fonts/Gloria.ttf
+imbo/fonts/Kalam.ttf
+imbo/fonts/Kaushan.ttf
+imbo/fonts/Merienda.ttf
 imbo/fonts/Roboto-Medium.ttf
+imbo/fonts/Typewriter.ttf
 imbo/fonts/Ubuntu-B.ttf

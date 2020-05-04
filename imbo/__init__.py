@@ -8,10 +8,12 @@ abspath = lambda file_name: os.path.join(
 if not os.path.exists(abspath("")):
     os.makedirs(abspath(""))
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __author__ = 'imneonizer'
 
 imbo = ImBo()
 draw = imbo.draw
 available_fonts = imbo.available_fonts
 upload_font = imbo.upload_font
+rescale = imbo.rescale
+resize = imbo.resize

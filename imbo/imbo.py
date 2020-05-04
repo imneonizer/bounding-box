@@ -13,6 +13,7 @@ abspath = lambda file_name: os.path.join(
 class ImBo(ReScaler):
 
     def __init__(self, font_name="Roboto-Medium", font_size=20):
+        super().__init__()
 
         self.FONT_SIZE = font_size
         self.FONT_NAME = font_name
@@ -127,13 +128,11 @@ class ImBo(ReScaler):
 
         return np.concatenate(image).transpose(1, 2, 0)
 
-    def draw(self, image, left, top, right, bottom, label=None, bbox_color=None, label_color=None, font_name="Roboto-Medium", font_size=20, thickness=2, adjust_label=(0, 0), rescale=False):
+    def draw(self, image, left, top, right, bottom, label=None, bbox_color=None, label_color=None, font_name="Roboto-Medium", font_size=20.0, thickness=2.0, adjust_label=(0.0, 0.0), rescale=False, rescale_width=1920, rescale_height=1080):
         assert type(image) is np.ndarray, "'image' parameter must be a numpy.ndarray, but given: {}".format(
             type(image))
         assert type(label) is str, "'label' must be a string"
-        if len(label) == 0:
-            label = None
-        assert type(thickness) is int, "'thickness' must be a integer"
+        assert type(int(thickness)) is int, "'thickness' must be an integer"
 
         # bounding box coordinates
         left, top, right, bottom = int(left), int(top), int(right), int(bottom)
@@ -141,9 +140,24 @@ class ImBo(ReScaler):
         # if rescaling is enabled resize image to width=1920 or height=1080
         # based on whether image is landscape or portrait and process the image
         if rescale:
+            # if values are in float means they are default values
+            # hence override them to fit with auto rescaled image
+            if type(font_size) is float:
+                font_size = 50
+            if type(thickness) is float:
+                thickness = 8
+            if type(adjust_label[0]) is float and type(adjust_label[1]) is float:
+                adjust_label = (-3, 0)
+
             original_height, original_width = image.shape[:2]
-            image, left, top, right, bottom = self.rescale(
-                image, left, top, right, bottom)
+            if image.shape[1] > image.shape[0]:
+                image, rescaled_coords = self.rescale(
+                    image, [(left, top, right, bottom)], width=rescale_width, height=rescale_height, keep_ratio=True)
+            else:
+                image, rescaled_coords = self.rescale(
+                    image, [(left, top, right, bottom)], width=rescale_height, height=rescale_width, keep_ratio=True)
+
+            left, top, right, bottom = rescaled_coords[0]
 
         # experimental argument to override label box position
         adj_left, adj_top = adjust_label
@@ -180,14 +194,15 @@ class ImBo(ReScaler):
                     self.COLOR_NAME_TO_RGB[self.LABEL2COLOR(label)][1])
 
         image = cv2.rectangle(image, (left, top),
-                              (right, bottom), bbox_color, thickness=thickness)
+                              (right, bottom), bbox_color, thickness=int(thickness))
 
         if label:
             _, image_width, _ = image.shape
 
             label_image = self.get_label_image(
-                label, label_color, bbox_color, font_name, font_size)
+                label, label_color, bbox_color, font_name, int(font_size))
             label_height, label_width, _ = label_image.shape
+
             rectangle_height, rectangle_width = 1 + label_height, 1 + label_width
 
             rectangle_bottom = top
@@ -197,27 +212,34 @@ class ImBo(ReScaler):
             rectangle_top = rectangle_bottom - rectangle_height
             rectangle_right = rectangle_left + rectangle_width
 
-            label_top = rectangle_top + 1 + adj_top
+            label_top = rectangle_top + 1 + int(adj_top)
 
             if rectangle_top < 0:
                 rectangle_top = top
                 rectangle_bottom = rectangle_top + label_height + 1
-                label_top = rectangle_top + adj_top
+                label_top = rectangle_top + int(adj_top)
 
             # label text placement position
-            label_left = rectangle_left + 1 + adj_left
+            label_left = rectangle_left + 1 + int(adj_left)
             label_bottom = label_top + label_height
             label_right = label_left + label_width
 
-            rec_left_top = (rectangle_left + adj_left, rectangle_top + adj_top)
-            rec_right_bottom = (rectangle_right + adj_left, rectangle_bottom)
+            rec_left_top = (rectangle_left + int(adj_left),
+                            rectangle_top + int(adj_top))
+            rec_right_bottom = (
+                rectangle_right + int(adj_left), rectangle_bottom)
 
-            # rectangle fill below label text on image as a backup
-            cv2.rectangle(image, rec_left_top,
-                          rec_right_bottom, bbox_color, -1)
-            # overwriting image array with text array
-            image[label_top:label_bottom,
-                  label_left:label_right, :] = label_image
+            if not (label_height > image.shape[0] or label_width > image.shape[1]):
+                # rectangle fill below label text on image as a backup
+                cv2.rectangle(image, rec_left_top,
+                              rec_right_bottom, bbox_color, -1)
+
+                # overwriting image array with text array
+                image[label_top:label_bottom,
+                      label_left:label_right, :] = label_image
+            else:
+                print("[warning] unable to fit text:'{}' of size {} to image of size {}".format(
+                    label, label_image.shape, image.shape))
 
         if rescale:
             image = cv2.resize(
