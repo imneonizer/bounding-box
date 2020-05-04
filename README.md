@@ -102,7 +102,7 @@ image, coordinates = imbo.rescale(image, coordinates, width=900, height=600, pad
 
 - `padding_color`: *BGR tuple*, when using `padding='constant'` it can be used to set padding color.
 
-  Here is an example showing how to do custom rescaling of images and bounding boxes.
+  Here is an [example](https://github.com/imneonizer/imbo/blob/master/docs/Resize%20example/Readme.md) showing how to do custom rescaling of images and bounding boxes.
 
 ## Video Demo
 ![](docs/images/nitin-demo.gif)
