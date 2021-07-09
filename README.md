@@ -19,7 +19,6 @@
 </tr>
 </table>
 
-We at [SmartCow](https://www.smartcow.ai) constantly work on development of tools to enhance our workflow hence **imbo**.  
 **IMBO** is a library to plot pretty bounding boxes with a simple Python API.  
 *Please notice this lib does **not** do object detection for you, but only helps to display pretty bounding boxes with a carefully chosen set of colors.*  
 
